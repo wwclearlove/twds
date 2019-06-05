@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import cdictv.twds.R;
 import cdictv.twds.util.CircleProgressbar;
+import cdictv.twds.util.Sputils;
 
 public class guideActivity extends AppCompatActivity {
     private Button cancel;
@@ -25,6 +26,12 @@ public class guideActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
         initView();
+        Boolean pd = Sputils.getBolean("bd", true);
+        if(pd){
+            Sputils.putString("ip","");
+            Sputils.putString("port","");
+        }
+        Sputils.putBoolean("bd",false);
         mCircleProgressbar.setOutLineColor(Color.TRANSPARENT);
         mCircleProgressbar.setInCircleColor(Color.parseColor("#505559"));
         mCircleProgressbar.setProgressColor(Color.parseColor("#1BB079"));
@@ -36,9 +43,6 @@ public class guideActivity extends AppCompatActivity {
         mCircleProgressbar.setCountdownProgressListener(1,progressListener);
 
         mCircleProgressbar.setOnClickListener(new View.OnClickListener() {
-
-
-
             @Override
             public void onClick(View v)
             {
@@ -48,6 +52,12 @@ public class guideActivity extends AppCompatActivity {
                 save=inflate.findViewById(R.id.save);
                 ed_port=inflate.findViewById(R.id.ed_port);
                 ed_ip=inflate.findViewById(R.id.ed_ip);
+                if(Sputils.getString("ip").isEmpty()||Sputils.getString("port").isEmpty()){
+
+                }else {
+                    ed_port.setText(Sputils.getString("port"));
+                    ed_ip.setText(Sputils.getString("ip"));
+                }
                 final AlertDialog alertDialog = new AlertDialog.Builder(guideActivity.this).setView(inflate).show();
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -60,6 +70,8 @@ public class guideActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         alertDialog.dismiss();
+                        Sputils.putString("ip",ed_ip.getText().toString().trim());
+                        Sputils.putString("port",ed_port.getText().toString().trim());
                         Intent intent = new Intent(guideActivity.this,MainActivity.class);
                          startActivity(intent);
                         finish();

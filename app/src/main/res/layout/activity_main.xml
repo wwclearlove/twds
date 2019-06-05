@@ -10,25 +10,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="30dp"
         android:background="#0099CC"
-        android:gravity="center"
+        android:gravity="left"
         android:orientation="horizontal">
-
         <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="网址"
-            android:textColor="#fff"
-            android:textSize="25dp" />
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/set"
+            android:gravity="left"
+           android:background="@drawable/set"
+          />
 
-        <View
-            android:layout_width="30dp"
-            android:layout_height="wrap_content" />
 
     </LinearLayout>
     <WebView
