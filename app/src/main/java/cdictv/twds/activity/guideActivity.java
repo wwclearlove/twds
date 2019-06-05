@@ -2,7 +2,9 @@ package cdictv.twds.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import cdictv.twds.R;
+import cdictv.twds.receiver.NetWorkChangReceiver;
 import cdictv.twds.util.CircleProgressbar;
 import cdictv.twds.util.Sputils;
 
@@ -21,10 +24,28 @@ public class guideActivity extends AppCompatActivity {
     private EditText ed_ip;
     private CircleProgressbar mCircleProgressbar;
     private boolean isClick = false;
+
+
+    private boolean isReistered = false;
+    private NetWorkChangReceiver netWorkChangReceiver;
+    private IntentFilter filter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
+
+        //注册广播监听网络
+        netWorkChangReceiver = new NetWorkChangReceiver();
+        filter = new IntentFilter();
+        //filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        //filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netWorkChangReceiver,filter);
+        isReistered = true;
+
+
+
         initView();
         Boolean pd = Sputils.getBolean("bd", true);
         if(pd){
@@ -99,6 +120,5 @@ public class guideActivity extends AppCompatActivity {
     };
     private void initView() {
         mCircleProgressbar = (CircleProgressbar) findViewById(R.id.tv_red_skip);
-
     }
 }
