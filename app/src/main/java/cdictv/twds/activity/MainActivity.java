@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
                 Log.e("bh", "shouldOverrideUrlLoading: "+url );
-                mHandler.postDelayed(sRunnable,3000);
+                mHandler.postDelayed(sRunnable,5000);
                 return true;
             }
 
