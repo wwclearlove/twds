@@ -12,6 +12,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,13 @@ import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
 public class MainActivity extends BaseActivity {
+    private ImageView logoImg;
+    private TextView addressname;
+    private TextView adminname;
+    private TextView classTeach;
+    private TextView teachNum;
+    private TextView timeClass;
+    private TextView dateStudent;
     private Button cancel;
     private Button save;
     private Button ture;
@@ -35,7 +43,7 @@ public class MainActivity extends BaseActivity {
     private EditText ed_password;
     private EditText ed_port;
     private EditText ed_ip;
-    private TextView set;
+    private ImageView set;
     private TextView tc;
     private TextView id;
     private TextView djs;
@@ -43,24 +51,27 @@ public class MainActivity extends BaseActivity {
     private int time=180;
     private ProgressDialog progressDialog;
     String uri;
+    String bhuri;
     private String mAndroidID;
     public Handler mHandler = new Handler();
     public Runnable sRunnable = new Runnable() {
         @Override
         public void run() {
-//
             time--;
             if(time>0){
-
                 Log.e("time", "run: "+time);
-                if(time<=31){
+                Log.d("bhuri",bhuri);
+                if(time<=31&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
                     djs.setVisibility(View.VISIBLE);
                     djs.setText(time+"");
                     if(time==1){
                         webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
                         djs.setVisibility(View.GONE);
-                        time=300;
+                        time=35;
                     }
+                }else {
+                    djs.setVisibility(View.GONE);
+                    mHandler.removeCallbacks(sRunnable);
                 }
             }
             mHandler.postDelayed(this, 1000);
@@ -89,8 +100,13 @@ public class MainActivity extends BaseActivity {
                 JsonBean.DataBean data = newsBean.data;
                 Log.d("json", "success: "+data.admin);
                 String[] words = data.time.split(" ");
-                Log.d("sp1",words[0]);
-                Log.d("sp2",words[1 ]);
+                addressname.setText(data.name+"");
+                adminname.setText("管理员:"+data.admin);
+                classTeach.setText("班级:"+data.classX+"\n教师"+data.teacher);
+                teachNum.setText("教学内容:"+data.jiaoxueneirong+"\n实训人数:"+
+                        data.count+"   应到:"+data.yingdao+"   实到:"+data.shidao);
+                timeClass.setText("   "+words[0]+" \n   "+words[1]+" "+data.jiechi);
+                dateStudent.setText(data.xuenian+" "+data.xueqi+" \n         "+data.zhouchi+"  "+data.xinqi);
             }
 
             @Override
@@ -177,10 +193,12 @@ public class MainActivity extends BaseActivity {
                 // TODO Auto-generated method stub
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
+
                 Log.e("bh", "shouldOverrideUrlLoading: " + url);
                 mHandler.removeCallbacks(sRunnable);
-                time=180;
+                time=35;
                 mHandler.postDelayed(sRunnable, 1000);
+
                 return true;
             }
 
@@ -193,6 +211,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                bhuri=url;
+                Log.d("bhurl", "onPageFinished: "+url);
                 removeProgress();//当加载结束时移除动画
             }
 
@@ -227,7 +247,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-        set = (TextView) findViewById(R.id.set);
+
+
+        logoImg = (ImageView) findViewById(R.id.logo_img);
+        addressname = (TextView) findViewById(R.id.addressname);
+        adminname = (TextView) findViewById(R.id.adminname);
+        classTeach = (TextView) findViewById(R.id.class_teach);
+        teachNum = (TextView) findViewById(R.id.teach_num);
+        timeClass = (TextView) findViewById(R.id.time_class);
+        dateStudent = (TextView) findViewById(R.id.date_student);
+
+        set = (ImageView) findViewById(R.id.set);
         djs = (TextView) findViewById(R.id.djs);
         webview = (WebView) findViewById(R.id.webview);
         mAndroidID = DeviceUtils.getAndroidID(MainActivity.this);

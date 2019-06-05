@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -19,16 +20,10 @@ public class guideActivity extends BaseActivity {
     private EditText ed_ip;
     private CircleProgressbar mCircleProgressbar;
     private boolean isClick = false;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
-
-
-
         initView();
         Boolean pd = Sputils.getBolean("bd", true);
         if(pd){
@@ -75,4 +70,5 @@ public class guideActivity extends BaseActivity {
     private void initView() {
         mCircleProgressbar = (CircleProgressbar) findViewById(R.id.tv_red_skip);
     }
+
 }

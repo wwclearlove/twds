@@ -13,7 +13,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true">
 
         <cdictv.twds.util.CircleProgressbar
             android:id="@+id/tv_red_skip"

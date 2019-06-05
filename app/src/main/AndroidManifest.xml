@@ -17,11 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.MainActivity"
-                 >
-
-        </activity>
-
+        <activity android:name=".activity.MainActivity" />
         <receiver
             android:name=".receiver.MyReceiver"
             android:enabled="true"
@@ -63,7 +59,7 @@
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
-        <activity android:name=".activity.BaseActivity"/>
+        <activity android:name=".activity.BaseActivity"></activity>
     </application>
 
 </manifest>

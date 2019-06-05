@@ -1,6 +1,7 @@
 package cdictv.twds.receiver;
 
 
+
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,10 +23,10 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.i("onReceive","----网络连接-----"+context.toString());
+        Log.i("onReceive","----网络连接-----");
         if(!isNetworkConnected(context)){
             Log.i("----network-----","网络连接");
-            Toast.makeText(context,"没有网络连接",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"没有网络连接", Toast.LENGTH_SHORT).show();
 
             //直接进入手机中的wifi网络设置界面
             bulider =new AlertDialog.Builder(context);
@@ -57,6 +58,7 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
                     Log.i("alertDialog", "onReceive: "+e.getMessage());
                     e.printStackTrace();
                 }
+                alertDialog.show();
                 netWork = false;
             }
 
