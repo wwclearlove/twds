@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     public  Runnable sRunnable=new Runnable() {
         @Override
         public void run() {
-
             webview.loadUrl("http://ming.cdivtc.edu.cn/?id="+mAndroidID);
         }
     };
