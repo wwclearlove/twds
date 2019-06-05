@@ -23,7 +23,6 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
 
 
-
         Log.i("onReceive","----网络连接-----");
         if(!isNetworkConnected(context)){
             Log.i("----network-----","网络连接");

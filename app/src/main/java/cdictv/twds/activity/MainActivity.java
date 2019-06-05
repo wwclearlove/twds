@@ -20,7 +20,7 @@ import cdictv.twds.R;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private Button cancel;
     private Button save;
     private EditText ed_port;

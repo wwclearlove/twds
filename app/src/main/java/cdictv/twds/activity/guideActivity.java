@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -17,7 +18,7 @@ import cdictv.twds.receiver.NetWorkChangReceiver;
 import cdictv.twds.util.CircleProgressbar;
 import cdictv.twds.util.Sputils;
 
-public class guideActivity extends AppCompatActivity {
+public class guideActivity extends BaseActivity {
     private Button cancel;
     private Button save;
     private EditText ed_port;
@@ -35,14 +36,14 @@ public class guideActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
 
-        //注册广播监听网络
-        netWorkChangReceiver = new NetWorkChangReceiver();
-        filter = new IntentFilter();
-        //filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        //filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(netWorkChangReceiver,filter);
-        isReistered = true;
+//        //注册广播监听网络
+//        netWorkChangReceiver = new NetWorkChangReceiver();
+//        filter = new IntentFilter();
+//        //filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+//        //filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+//        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+//        registerReceiver(netWorkChangReceiver,filter);
+//        isReistered = true;
 
 
 
@@ -120,5 +121,13 @@ public class guideActivity extends AppCompatActivity {
     };
     private void initView() {
         mCircleProgressbar = (CircleProgressbar) findViewById(R.id.tv_red_skip);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(isReistered){
+            unregisterReceiver(netWorkChangReceiver);
+        }
     }
 }
