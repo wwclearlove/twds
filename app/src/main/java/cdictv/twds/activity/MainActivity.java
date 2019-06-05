@@ -16,6 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import cdictv.twds.R;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
                 Log.e("bh", "shouldOverrideUrlLoading: "+url );
-                mHandler.postDelayed(sRunnable,5000);
+                mHandler.postDelayed(sRunnable,10000);
                 return true;
             }
 
@@ -129,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
     private void panduan() {
         if(Sputils.getString("ip").isEmpty()){
             uri="http://ming.cdivtc.edu.cn/?id="+mAndroidID;
+        }else if(judgeContainsStr(Sputils.getString("ip"))){
+            uri="http://"+Sputils.getString("ip")+"/?id="+mAndroidID;
         }else {
             uri="http://"+Sputils.getString("ip")+":"+Sputils.getString("port")+"/oupi/?id="+mAndroidID;
         }
@@ -165,6 +170,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
+    public boolean judgeContainsStr(String cardNum) {
+        String regex=".*[a-zA-Z]+.*";
+        Matcher m= Pattern.compile(regex).matcher(cardNum);
+        return m.matches();
+    }
 
 }
