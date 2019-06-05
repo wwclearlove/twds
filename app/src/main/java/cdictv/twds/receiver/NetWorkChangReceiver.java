@@ -15,7 +15,6 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     private boolean netWork = true;
     private AlertDialog.Builder bulider;
     private static AlertDialog alertDialog = null;
-    private DialogInterface dialogInterface;
 
     public NetWorkChangReceiver() {
     }
@@ -39,19 +38,17 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
                 public void onClick(DialogInterface dialog, int arg1) {
                     // 打开设置界面
                     context.startActivity(new Intent(Settings.ACTION_SETTINGS));
-                    netWork = false;
+                    netWork = true;
                 }
             });
             bulider.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
-
-                    dialogInterface = dialog;
-                    dialogInterface.dismiss();
-                    netWork = false;
+                    dialog.dismiss();
+                    netWork = true;
                 }
             });
-            if(alertDialog == null && netWork){
+            if(netWork){
                 alertDialog =  bulider.create();
                 alertDialog.show();
                 netWork = false;
@@ -61,7 +58,7 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             if(alertDialog != null){
                 alertDialog.dismiss();
             }
-            netWork = false;
+            netWork = true;
             return;
         }
     }
