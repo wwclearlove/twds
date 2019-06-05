@@ -5,23 +5,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:background="#2133d1"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:background="#fff"
+
         android:gravity="right"
         android:orientation="horizontal">
         <TextView
-            android:layout_marginLeft="5dp"
+            android:id="@+id/djs"
+            android:textSize="16sp"
+            android:text="180"
+            android:textColor="#000"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            />
+        <TextView
             android:id="@+id/set"
-            android:gravity="left"
-           android:background="@drawable/set"
-          />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/set"
+
+            />
 
 
     </LinearLayout>

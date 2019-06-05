@@ -33,7 +33,9 @@ public class MainActivity extends BaseActivity {
     private TextView set;
     private TextView tc;
     private TextView id;
+    private TextView djs;
     private WebView webview;
+    private int time=180;
     private ProgressDialog progressDialog;
     String uri;
     private String mAndroidID;
@@ -41,7 +43,22 @@ public class MainActivity extends BaseActivity {
     public Runnable sRunnable = new Runnable() {
         @Override
         public void run() {
-            webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
+//
+            time--;
+            if(time>0){
+
+                Log.e("time", "run: "+time);
+                if(time<=31){
+                    djs.setVisibility(View.VISIBLE);
+                    djs.setText(time+"");
+                    if(time==1){
+                        webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
+                        djs.setVisibility(View.GONE);
+                        time=300;
+                    }
+                }
+            }
+            mHandler.postDelayed(this, 1000);
         }
     };
 
@@ -133,7 +150,9 @@ public class MainActivity extends BaseActivity {
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
                 Log.e("bh", "shouldOverrideUrlLoading: " + url);
-                mHandler.postDelayed(sRunnable, 10000);
+                mHandler.removeCallbacks(sRunnable);
+                time=180;
+                mHandler.postDelayed(sRunnable, 1000);
                 return true;
             }
 
@@ -181,6 +200,7 @@ public class MainActivity extends BaseActivity {
 
     private void initView() {
         set = (TextView) findViewById(R.id.set);
+        djs = (TextView) findViewById(R.id.djs);
         webview = (WebView) findViewById(R.id.webview);
         mAndroidID = DeviceUtils.getAndroidID(MainActivity.this);
     }
