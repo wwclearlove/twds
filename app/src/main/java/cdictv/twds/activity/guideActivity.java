@@ -29,8 +29,6 @@ public class guideActivity extends BaseActivity {
 
 
 
-
-
         initView();
         Boolean pd = Sputils.getBolean("bd", true);
         if(pd){

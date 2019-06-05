@@ -15,10 +15,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cdictv.twds.R;
+import cdictv.twds.bean.JsonBean;
+import cdictv.twds.network.Mycall;
+import cdictv.twds.network.ShowOkhkhttpapi;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
@@ -68,8 +73,31 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        initdata();
         initWeb();
         initlistener();
+
+    }
+
+    private void initdata() {
+        ShowOkhkhttpapi.show("http://ming.cdivtc.edu.cn/api/getlabrun.aspx?code=123", new Mycall() {
+            @Override
+            public void success(String json) {
+                Log.i("json",json);
+                Gson gson=new Gson();
+             JsonBean newsBean=gson.fromJson(json,JsonBean.class);
+                JsonBean.DataBean data = newsBean.data;
+                Log.d("json", "success: "+data.admin);
+                String[] words = data.time.split(" ");
+                Log.d("sp1",words[0]);
+                Log.d("sp2",words[1 ]);
+            }
+
+            @Override
+            public void filed(String msg) {
+
+            }
+        });
     }
 
     private void initlistener() {
