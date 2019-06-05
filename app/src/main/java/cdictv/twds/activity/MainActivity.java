@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -23,7 +22,7 @@ import cdictv.twds.R;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private Button cancel;
     private Button save;
     private EditText ed_port;

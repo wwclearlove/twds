@@ -2,22 +2,18 @@ package cdictv.twds.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import cdictv.twds.R;
-import cdictv.twds.receiver.NetWorkChangReceiver;
 import cdictv.twds.util.CircleProgressbar;
 import cdictv.twds.util.Sputils;
 
-public class guideActivity extends AppCompatActivity {
+public class guideActivity extends BaseActivity {
     private Button cancel;
     private Button save;
     private EditText ed_port;
@@ -26,23 +22,13 @@ public class guideActivity extends AppCompatActivity {
     private boolean isClick = false;
 
 
-    private boolean isReistered = false;
-    private NetWorkChangReceiver netWorkChangReceiver;
-    private IntentFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
 
-        //注册广播监听网络
-        netWorkChangReceiver = new NetWorkChangReceiver();
-        filter = new IntentFilter();
-        //filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        //filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(netWorkChangReceiver,filter);
-        isReistered = true;
+
 
 
 
