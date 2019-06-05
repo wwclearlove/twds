@@ -83,7 +83,9 @@ public class guideActivity extends AppCompatActivity {
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        isClick = false;
+                        Intent intent = new Intent(guideActivity.this,MainActivity.class);
+                        startActivity(intent);
+                        finish();
                         alertDialog.dismiss();
                     }
                 });
