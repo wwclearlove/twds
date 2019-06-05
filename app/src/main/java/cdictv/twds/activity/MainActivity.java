@@ -6,15 +6,18 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cdictv.twds.R;
 import cdictv.twds.util.DeviceUtils;
@@ -25,7 +28,7 @@ public class MainActivity extends BaseActivity {
     private Button save;
     private EditText ed_port;
     private EditText ed_ip;
-    private TextView set;
+    private ImageView set;
     private WebView webview;
     private ProgressDialog progressDialog;
     String uri;
@@ -34,7 +37,6 @@ public class MainActivity extends BaseActivity {
     public  Runnable sRunnable=new Runnable() {
         @Override
         public void run() {
-
             webview.loadUrl("http://ming.cdivtc.edu.cn/?id="+mAndroidID);
         }
     };
@@ -92,7 +94,7 @@ public class MainActivity extends BaseActivity {
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
                 Log.e("bh", "shouldOverrideUrlLoading: "+url );
-                mHandler.postDelayed(sRunnable,5000);
+                mHandler.postDelayed(sRunnable,180000);
                 return true;
             }
 
@@ -129,6 +131,8 @@ public class MainActivity extends BaseActivity {
     private void panduan() {
         if(Sputils.getString("ip").isEmpty()){
             uri="http://ming.cdivtc.edu.cn/?id="+mAndroidID;
+        }else if(judgeContainsStr(Sputils.getString("ip"))){
+            uri="http://"+Sputils.getString("ip")+"/?id="+mAndroidID;
         }else {
             uri="http://"+Sputils.getString("ip")+":"+Sputils.getString("port")+"/oupi/?id="+mAndroidID;
         }
@@ -138,7 +142,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-        set = (TextView) findViewById(R.id.set);
+        set = (ImageView) findViewById(R.id.set);
         webview = (WebView) findViewById(R.id.webview);
         mAndroidID = DeviceUtils.getAndroidID(MainActivity.this);
     }
@@ -165,6 +169,10 @@ public class MainActivity extends BaseActivity {
         }
 
     }
-
+    public boolean judgeContainsStr(String cardNum) {
+        String regex=".*[a-zA-Z]+.*";
+        Matcher m= Pattern.compile(regex).matcher(cardNum);
+        return m.matches();
+    }
 
 }

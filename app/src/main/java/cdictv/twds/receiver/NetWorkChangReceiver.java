@@ -1,5 +1,6 @@
 package cdictv.twds.receiver;
 
+
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,21 +23,24 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
 
-
         Log.i("onReceive","----网络连接-----");
         if(!isNetworkConnected(context)){
             Log.i("----network-----","网络连接");
-            Toast.makeText(context,"没有网络连接",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"没有网络连接", Toast.LENGTH_SHORT).show();
 
             //直接进入手机中的wifi网络设置界面
             bulider =new AlertDialog.Builder(context);
+
             bulider.setTitle("提示");
             bulider.setMessage("网络连接不可用，请检查网络设置");
+
             bulider.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
                     // 打开设置界面
-                    context.startActivity(new Intent(Settings.ACTION_SETTINGS));
+                    Intent intent=new Intent(Settings.ACTION_SETTINGS);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                     netWork = true;
                 }
             });
@@ -49,12 +53,14 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             });
             if(netWork){
                 alertDialog =  bulider.create();
+//                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.show();
                 netWork = false;
             }
 
         }else {
             if(alertDialog != null){
+//                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.dismiss();
             }
             netWork = true;
