@@ -5,18 +5,48 @@
     android:layout_height="wrap_content"
     android:background="#ffffff"
     android:orientation="vertical">
-
-	<TextView
+	<RelativeLayout
 		android:layout_width="match_parent"
-		android:text="Setting"
-		android:background="@color/dialog_title"
-		android:gravity="center_vertical"
-		android:textSize="20dp"
-		android:textColor="@color/white"
-		android:textStyle="bold"
-		android:paddingLeft="10dp"
-		android:layout_height="50dp">
-	</TextView>
+		android:layout_height="50dp"
+		android:background="@color/dialog_title">
+		<TextView
+			android:id="@+id/sz"
+			android:layout_width="wrap_content"
+			android:text="设置"
+			android:gravity="center_vertical"
+			android:textSize="16dp"
+			android:textColor="@color/white"
+			android:textStyle="bold"
+			android:paddingLeft="10dp"
+			android:layout_height="50dp">
+		</TextView>
+		<TextView
+			android:layout_marginLeft="10dp"
+			android:id="@+id/android"
+			android:layout_width="wrap_content"
+			android:layout_height="50dp"
+			android:layout_toRightOf="@+id/sz"
+			android:gravity="center_vertical"
+			android:paddingLeft="10dp"
+			android:text="当前设备ID:00e04c6801182578"
+			android:textColor="@color/white"
+			android:textSize="14dp"
+			android:textStyle="bold">
+		</TextView>
+		<TextView
+			android:id="@+id/tc"
+			android:layout_width="wrap_content"
+			android:text="退出"
+			android:layout_alignParentRight="true"
+			android:gravity="center_vertical"
+			android:textSize="16dp"
+			android:textColor="@color/white"
+			android:textStyle="bold"
+			android:paddingLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:layout_height="50dp">
+		</TextView>
+	</RelativeLayout>
 	<View
 		android:background="#405a94"
 		android:layout_width="match_parent"
@@ -97,7 +127,7 @@
 			android:textSize="16dp"
 			android:layout_alignParentLeft="true"
 			android:background="@drawable/btn_blue"
-			android:layout_height="wrap_content" />
+			android:layout_height="30dp" />
 
 		<Button
 			android:layout_width="wrap_content"
@@ -108,7 +138,7 @@
 			android:textSize="16dp"
 			android:layout_marginRight="50dp"
 			android:background="@drawable/btn_blue"
-			android:layout_height="wrap_content" />
+			android:layout_height="30dp" />
 
 	</RelativeLayout>
 

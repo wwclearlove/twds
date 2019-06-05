@@ -1,6 +1,5 @@
 package cdictv.twds.activity;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -54,40 +53,9 @@ public class guideActivity extends BaseActivity {
             public void onClick(View v)
             {
                 isClick = true;
-                View inflate = View.inflate(guideActivity.this, R.layout.set_ip_dialog, null);
-                cancel=inflate.findViewById(R.id.cancel);
-                save=inflate.findViewById(R.id.save);
-                ed_port=inflate.findViewById(R.id.ed_port);
-                ed_ip=inflate.findViewById(R.id.ed_ip);
-                if(Sputils.getString("ip").isEmpty()||Sputils.getString("port").isEmpty()){
-
-                }else {
-                    ed_port.setText(Sputils.getString("port"));
-                    ed_ip.setText(Sputils.getString("ip"));
-                }
-                final AlertDialog alertDialog = new AlertDialog.Builder(guideActivity.this).setView(inflate).show();
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(guideActivity.this,MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                        alertDialog.dismiss();
-                    }
-                });
-                save.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.dismiss();
-                        Sputils.putString("ip",ed_ip.getText().toString().trim());
-                        Sputils.putString("port",ed_port.getText().toString().trim());
-                        Intent intent = new Intent(guideActivity.this,MainActivity.class);
-                         startActivity(intent);
-                        finish();
-                    }
-                });
-
-
+                Intent intent = new Intent(guideActivity.this,MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
