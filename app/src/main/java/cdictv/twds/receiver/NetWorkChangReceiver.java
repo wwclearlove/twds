@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 public class NetWorkChangReceiver extends BroadcastReceiver {
@@ -28,13 +29,17 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
 
             //直接进入手机中的wifi网络设置界面
             bulider =new AlertDialog.Builder(context);
+
             bulider.setTitle("提示");
             bulider.setMessage("网络连接不可用，请检查网络设置");
+
             bulider.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
                     // 打开设置界面
-                    context.startActivity(new Intent(Settings.ACTION_SETTINGS));
+                    Intent intent=new Intent(Settings.ACTION_SETTINGS);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                     netWork = true;
                 }
             });
@@ -47,12 +52,14 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             });
             if(netWork){
                 alertDialog =  bulider.create();
+                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.show();
                 netWork = false;
             }
 
         }else {
             if(alertDialog != null){
+                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.dismiss();
             }
             netWork = true;
