@@ -12,8 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:gravity="left"
-        android:orientation="horizontal">
+        >
 
 
         <ImageView
@@ -130,7 +129,7 @@
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/thread_time"
+            android:id="@+id/djs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -153,7 +152,6 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="13dp"
             android:layout_marginTop="8dp"/>
-
     </RelativeLayout>
 
 
