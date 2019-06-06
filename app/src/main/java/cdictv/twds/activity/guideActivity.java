@@ -20,14 +20,10 @@ public class guideActivity extends BaseActivity {
     private EditText ed_ip;
     private CircleProgressbar mCircleProgressbar;
     private boolean isClick = false;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
-
         initView();
         Boolean pd = Sputils.getBolean("bd", true);
         if(pd){

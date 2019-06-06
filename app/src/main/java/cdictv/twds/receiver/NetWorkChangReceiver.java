@@ -17,24 +17,23 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     private boolean netWork = true;
     private AlertDialog.Builder bulider;
     private static AlertDialog alertDialog = null;
+    private Message message;
 
     public NetWorkChangReceiver() {
     }
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-
         Log.i("onReceive","----网络连接-----");
         if(!isNetworkConnected(context)){
+            message.getMsg(false);
             Log.i("----network-----","网络连接");
             Toast.makeText(context,"没有网络连接", Toast.LENGTH_SHORT).show();
 
             //直接进入手机中的wifi网络设置界面
             bulider =new AlertDialog.Builder(context);
-
             bulider.setTitle("提示");
             bulider.setMessage("网络连接不可用，请检查网络设置");
-
             bulider.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
@@ -55,11 +54,18 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             if(netWork){
                 alertDialog =  bulider.create();
 //                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                try {
+                    alertDialog.show();
+                } catch (Exception e) {
+                    Log.i("alertDialog", "onReceive: "+e.getMessage());
+                    e.printStackTrace();
+                }
                 alertDialog.show();
                 netWork = false;
             }
 
         }else {
+
             if(alertDialog != null){
 //                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.dismiss();
@@ -80,5 +86,16 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             }
         }
         return false;
+    }
+    public interface  Message{
+        public void getMsg(Boolean flag);
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
     }
 }

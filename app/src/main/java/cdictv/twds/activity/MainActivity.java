@@ -16,21 +16,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cdictv.twds.R;
+import cdictv.twds.bean.JsonBean;
+import cdictv.twds.bean.MenuBean;
+import cdictv.twds.bean.MenuDataBean;
+import cdictv.twds.network.Mycall;
+import cdictv.twds.network.ShowOkhkhttpapi;
+import cdictv.twds.receiver.NetWorkChangReceiver;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity  {
+    private ImageView logoImg;
+    private TextView addressname;
+    private TextView adminname;
+    private TextView classTeach;
+    private TextView teachNum;
+    private TextView timeClass;
+    private TextView dateStudent;
     private Button cancel;
     private Button save;
     private Button ture;
@@ -46,30 +68,37 @@ public class MainActivity extends BaseActivity {
     private TextView xlPopip;
 
 
+    private boolean flag;
     private Context mContext;
+    List<String> menulist = new ArrayList<>();
+    List<String> urllist = new ArrayList<>();
+    ListPopupWindow mListPop;
 
 
     private int time=180;
     private ProgressDialog progressDialog;
     String uri;
+    String bhuri;
     private String mAndroidID;
     public Handler mHandler = new Handler();
     public Runnable sRunnable = new Runnable() {
         @Override
         public void run() {
-//
             time--;
             if(time>0){
-
                 Log.e("time", "run: "+time);
-                if(time<=31){
+                Log.d("bhuri",bhuri);
+                if(time<=31&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
                     djs.setVisibility(View.VISIBLE);
                     djs.setText(time+"");
                     if(time==1){
                         webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
                         djs.setVisibility(View.GONE);
-                        time=300;
+                        time=35;
                     }
+                }else {
+                    djs.setVisibility(View.GONE);
+                    mHandler.removeCallbacks(sRunnable);
                 }
             }
             mHandler.postDelayed(this, 1000);
@@ -83,14 +112,98 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         mContext = MainActivity.this;
         initView();
+        List<MenuDataBean> dataList= Sputils.getDataList("menu",  MenuDataBean[].class);
+        if(super.isFlag()){
+            initMeunData();
+        }else if(dataList.size() != 0){
+            try {
+                for(MenuDataBean dataBean:dataList){
+                    Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        initdata();
         initWeb();
         initlistener();
+        initListPopWindow();
+
+        //点击的下拉菜单
         xlPopip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //initPopWindow(v);
+                mListPop.show();
             }
         });
+    }
+
+    private void initMeunData() {
+        //初始化下拉菜单的值
+        ShowOkhkhttpapi.show("http://ming.cdivtc.edu.cn/api/getmenu.aspx?code=1", new Mycall() {
+            @Override
+            public void success(String json) {
+                Gson gson = new Gson();
+                MenuBean menuBean = null;
+                try {
+                    menuBean = gson.fromJson(json, MenuBean.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
+                Log.i("menuBean", "success: "+menuBean.errcode);
+                for(MenuBean.DataBean dataBean : menuBean.data){
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+                if(menuBean.errcode == 200){
+                    Sputils.setDataList("menu",menuBean.data);
+
+                }
+            }
+
+            @Override
+            public void filed(String msg) {
+
+            }
+        });
+    }
+
+    private void initdata() {
+        ShowOkhkhttpapi.show("http://ming.cdivtc.edu.cn/api/getlabrun.aspx?code=123", new Mycall() {
+            @Override
+            public void success(String json) {
+                Log.i("json",json);
+                Gson gson=new Gson();
+                JsonBean newsBean= null;
+                try {
+                    newsBean = gson.fromJson(json,JsonBean.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
+                JsonBean.DataBean data = newsBean.data;
+                Log.d("json", "success: "+data.admin);
+                String[] words = data.time.split(" ");
+                addressname.setText(data.name+"");
+                adminname.setText("管理员:"+data.admin);
+                classTeach.setText("班级:"+data.classX+"\n教师"+data.teacher);
+                teachNum.setText("教学内容:"+data.jiaoxueneirong+"\n实训人数:"+
+                        data.count+"   应到:"+data.yingdao+"   实到:"+data.shidao);
+                timeClass.setText("   "+words[0]+" \n   "+words[1]+" "+data.jiechi);
+                dateStudent.setText(data.xuenian+" "+data.xueqi+" \n         "+data.zhouchi+"  "+data.xinqi);
+            }
+
+            @Override
+            public void filed(String msg) {
+
+            }
+        });
+
+
     }
 
     private void initlistener() {
@@ -173,7 +286,7 @@ public class MainActivity extends BaseActivity {
 
                 Log.e("bh", "shouldOverrideUrlLoading: " + url);
                 mHandler.removeCallbacks(sRunnable);
-                time=180;
+                time=35;
                 mHandler.postDelayed(sRunnable, 1000);
 
                 return true;
@@ -188,6 +301,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                bhuri=url;
+                Log.d("bhurl", "onPageFinished: "+url);
                 removeProgress();//当加载结束时移除动画
             }
 
@@ -222,6 +337,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
+
+
+        logoImg = (ImageView) findViewById(R.id.logo_img);
+        addressname = (TextView) findViewById(R.id.addressname);
+        adminname = (TextView) findViewById(R.id.adminname);
+        classTeach = (TextView) findViewById(R.id.class_teach);
+        teachNum = (TextView) findViewById(R.id.teach_num);
+        timeClass = (TextView) findViewById(R.id.time_class);
+        dateStudent = (TextView) findViewById(R.id.date_student);
+
         set = (ImageView) findViewById(R.id.set);
         djs = (TextView) findViewById(R.id.djs);
         webview = (WebView) findViewById(R.id.webview);
@@ -260,111 +385,50 @@ public class MainActivity extends BaseActivity {
         return m.matches();
     }
 
-    
 
 
 
+    void initListPopWindow(){
 
-    //点击下拉列表
-//    private void initPopWindow(View v) {
-//        View view = LayoutInflater.from(mContext).inflate(R.layout.item_popip, null, false);
-//        final TextView shouye = (TextView) view.findViewById(R.id.web_index);
-//        final TextView sys = (TextView) view.findViewById(R.id.web_sys);
-//        final TextView yx = (TextView) view.findViewById(R.id.web_yx);
-//        final TextView kq = (TextView) view.findViewById(R.id.web_kq);
-//        final TextView xx = (TextView) view.findViewById(R.id.web_xx);
-//        final TextView bz = (TextView) view.findViewById(R.id.web_bz);
-//        final TextView ws = (TextView) view.findViewById(R.id.web_ws);
-//        final TextView syaq = (TextView) view.findViewById(R.id.web_syaq);
-//        final TextView news = (TextView) view.findViewById(R.id.web_news);
-//        final TextView ss = (TextView) view.findViewById(R.id.web_ss);
-//        //1.构造一个PopupWindow，参数依次是加载的View，宽高
-//        final PopupWindow popWindow = new PopupWindow(view,
-//                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-//
-//        popWindow.setAnimationStyle(R.anim.anim_pop);  //设置加载动画
-//
-//        //这些为了点击非PopupWindow区域，PopupWindow会消失的，如果没有下面的
-//        //代码的话，你会发现，当你把PopupWindow显示出来了，无论你按多少次后退键
-//        //PopupWindow并不会关闭，而且退不出程序，加上下述代码可以解决这个问题
-//        popWindow.setTouchable(true);
-//        popWindow.setTouchInterceptor(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                return false;
-//                // 这里如果返回true的话，touch事件将被拦截
-//                // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
-//            }
-//        });
-//        popWindow.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#B0000000")));    //要为popWindow设置一个背景才有效
-//
-//        //设置popupWindow显示的位置，参数依次是参照View，x轴的偏移量，y轴的偏移量
-//        popWindow.showAsDropDown(v, -10, 10);
-//
-//        //设置popupWindow里的按钮的事件
-//        shouye.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, shouye.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        sys.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, sys.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        yx.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        kq.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, kq.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        xx.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        bz.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        ws.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        syaq.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        news.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        ss.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, yx.getText().toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//    }
+
+       List<MenuDataBean> dataList= Sputils.getDataList("menu",  MenuDataBean[].class);
+
+        try {
+            for(MenuDataBean dataBean:dataList){
+                Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                if(menulist.size() == 0 && urllist.size() == 0){
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mListPop = new ListPopupWindow(MainActivity.this);
+
+
+        mListPop.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.item_popip,R.id.pop_text,menulist));
+        mListPop.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        mListPop.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mListPop.setAnchorView(xlPopip);//设置ListPopupWindow的锚点，即关联PopupWindow的显示位置和这个锚点
+        mListPop.setModal(true);//设置是否是模式
+        mListPop.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                int position, long id) {
+                Log.i("onItemClick", "onItemClick: "+"http://ming.cdivtc.edu.cn"+urllist.get(position)+"/?id=" + mAndroidID);
+
+                webview.loadUrl("http://ming.cdivtc.edu.cn"+urllist.get(position)+"?id=" + mAndroidID);
+                //Toast.makeText(MainActivity.this,urllist.get(position),Toast.LENGTH_SHORT).show();
+                mListPop.dismiss();
+            }
+        });
+
+    }
+
+
 }
+
 
