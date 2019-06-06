@@ -17,6 +17,7 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     private boolean netWork = true;
     private AlertDialog.Builder bulider;
     private static AlertDialog alertDialog = null;
+    private Message message;
 
     public NetWorkChangReceiver() {
     }
@@ -25,6 +26,11 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.i("onReceive","----网络连接-----");
         if(!isNetworkConnected(context)){
+            try {
+                message.getMsg(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Log.i("----network-----","网络连接");
             Toast.makeText(context,"没有网络连接", Toast.LENGTH_SHORT).show();
 
@@ -45,7 +51,11 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             bulider.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
-                    dialog.dismiss();
+                    try {
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     netWork = true;
                 }
             });
@@ -58,15 +68,15 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
                     Log.i("alertDialog", "onReceive: "+e.getMessage());
                     e.printStackTrace();
                 }
-                try {
-                    alertDialog.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 netWork = false;
             }
 
         }else {
+            try {
+                message.getMsg(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if(alertDialog != null){
 //                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.dismiss();
@@ -87,5 +97,16 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             }
         }
         return false;
+    }
+    public interface  Message{
+        public void getMsg(boolean flag);
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
     }
 }

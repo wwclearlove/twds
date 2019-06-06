@@ -1,6 +1,7 @@
 package cdictv.twds.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -9,28 +10,36 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListPopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cdictv.twds.R;
 import cdictv.twds.bean.JsonBean;
+import cdictv.twds.bean.MenuBean;
+import cdictv.twds.bean.MenuDataBean;
 import cdictv.twds.network.Mycall;
 import cdictv.twds.network.ShowOkhkhttpapi;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity  {
     private ImageView logoImg;
     private TextView addressname;
     private TextView adminname;
@@ -50,6 +59,16 @@ public class MainActivity extends BaseActivity {
     private TextView id;
     private TextView djs;
     private WebView webview;
+    private TextView xlPopip;
+
+
+    private boolean flag;
+    private Context mContext;
+    List<String> menulist = new ArrayList<>();
+    List<String> urllist = new ArrayList<>();
+    ListPopupWindow mListPop;
+
+
     private int time=180;
     private ProgressDialog progressDialog;
     String uri;
@@ -66,7 +85,7 @@ public class MainActivity extends BaseActivity {
                 if(time==150||time==120||time==90||time==60||time==30||time==1){
                     initdata();
                 }
-                if(time<=31&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
+                if(time<=30&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
                     djs.setVisibility(View.VISIBLE);
                     djs.setText(time+"");
                     if(time==1){
@@ -90,11 +109,88 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = MainActivity.this;
         initView();
         initdata();
         initWeb();
         initlistener();
+        initListPopWindow();
 
+        //点击的下拉菜单
+        xlPopip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //initPopWindow(v);
+                mListPop.show();
+            }
+        });
+    }
+
+    @Override
+    public void getMsg(boolean flag) {
+        super.getMsg(flag);
+        List<MenuDataBean> dataList = Sputils.getDataList("menu",  MenuDataBean[].class);
+        if(flag){
+            initMeunData();
+            Log.d("boolen1",flag+"");
+        }else if(dataList.size()!= 0){
+            try {
+                Log.d("boolen2",flag+"");
+                for(MenuDataBean dataBean:dataList){
+
+                    Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            initMeunData();
+        }
+
+
+    }
+
+    private void initMeunData() {
+        //初始化下拉菜单的值
+        ShowOkhkhttpapi.show("http://ming.cdivtc.edu.cn/api/getmenu.aspx?code=1", new Mycall() {
+            @Override
+            public void success(String json) {
+                Gson gson = new Gson();
+                MenuBean menuBean = null;
+                try {
+                    menuBean = gson.fromJson(json, MenuBean.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
+                Log.i("menuBean", "success: "+menuBean.errcode);
+                for(MenuBean.DataBean dataBean : menuBean.data){
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+                if(menuBean.errcode == 200){
+                    Sputils.setDataList("menu",menuBean.data);
+                }
+            }
+
+            @Override
+            public void filed(String msg) {
+                Log.e("err",msg);
+                try {
+//                    Log.d("boolen2",flag+"");
+                    List<MenuDataBean> dataList = Sputils.getDataList("menu",  MenuDataBean[].class);
+                    for(MenuDataBean dataBean:dataList){
+
+                        Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                        menulist.add(dataBean.name);
+                        urllist.add(dataBean.url);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void initdata() {
@@ -126,6 +222,8 @@ public class MainActivity extends BaseActivity {
 
             }
         });
+
+
     }
 
     private void initlistener() {
@@ -252,7 +350,7 @@ public class MainActivity extends BaseActivity {
         } else if (judgeContainsStr(Sputils.getString("ip"))) {
             uri = "http://" + Sputils.getString("ip") + "/?id=" + mAndroidID;
         } else {
-            uri = "http://" + Sputils.getString("ip") + ":" + Sputils.getString("port") + "/oupi/?id=" + mAndroidID;
+            uri = "http://" + Sputils.getString("ip") + ":" + Sputils.getString("port") + "/view/index.html?id=" + mAndroidID;
         }
         Log.e("uri", uri);
         webview.loadUrl(uri);
@@ -274,6 +372,7 @@ public class MainActivity extends BaseActivity {
         djs = (TextView) findViewById(R.id.djs);
         webview = (WebView) findViewById(R.id.webview);
         mAndroidID = DeviceUtils.getAndroidID(MainActivity.this);
+        xlPopip = (TextView) findViewById(R.id.xl_popip);
     }
 
     //-----显示ProgressDialog
@@ -307,6 +406,7 @@ public class MainActivity extends BaseActivity {
         return m.matches();
     }
 
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
@@ -323,4 +423,51 @@ public class MainActivity extends BaseActivity {
         }
         return super.onKeyDown(keyCode, event);
     }*/
+
+
+
+
+    void initListPopWindow(){
+
+
+     /*  List<MenuDataBean> dataList= Sputils.getDataList("menu",  MenuDataBean[].class);
+
+        try {
+            for(MenuDataBean dataBean:dataList){
+                Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                if(menulist.size() == 0 && urllist.size() == 0){
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        mListPop = new ListPopupWindow(MainActivity.this);
+
+
+        mListPop.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.item_popip,R.id.pop_text,menulist));
+        mListPop.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        mListPop.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mListPop.setAnchorView(xlPopip);//设置ListPopupWindow的锚点，即关联PopupWindow的显示位置和这个锚点
+        mListPop.setModal(true);//设置是否是模式
+        mListPop.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                int position, long id) {
+                Log.i("onItemClick", "onItemClick: "+"http://ming.cdivtc.edu.cn"+urllist.get(position)+"/?id=" + mAndroidID);
+
+                webview.loadUrl("http://ming.cdivtc.edu.cn"+urllist.get(position)+"?id=" + mAndroidID);
+                //Toast.makeText(MainActivity.this,urllist.get(position),Toast.LENGTH_SHORT).show();
+                mListPop.dismiss();
+            }
+        });
+
+    }
+
+
 }
+
+

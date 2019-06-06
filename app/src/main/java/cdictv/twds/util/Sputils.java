@@ -7,9 +7,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cdictv.twds.App;
+import cdictv.twds.bean.MenuDataBean;
 
 public class Sputils {
     private static SharedPreferences mSharedPreferences;
@@ -40,11 +42,11 @@ public class Sputils {
     public static void removeKey(String key){
         getSharedPreferences().edit().remove(key).apply();
     }
-    public <T> void setDataList(String tag, List<T> datalist) {
+
+    public static <T> void setDataList(String tag, List<T> datalist) {
 
         if (null == datalist || datalist.size() <= 0)
             return;
-
         Gson gson = new Gson();
         //转换成json数据，再保存
         String strJson = gson.toJson(datalist);
@@ -57,16 +59,15 @@ public class Sputils {
      * @param tag
      * @return
      */
-    public <T> List<T> getDataList(String tag) {
+    public static  <T> List<T> getDataList(String tag,Class<T[]> clazz) {
         List<T> datalist=new ArrayList<>();
         String strJson = getSharedPreferences().getString(tag, null);
         if (null == strJson) {
             return datalist;
         }
         Gson gson = new Gson();
-        datalist = gson.fromJson(strJson, new TypeToken<List<T>>() {
-        }.getType());
-        return datalist;
+        T[] arr = gson.fromJson(strJson, clazz);
+        return Arrays.asList(arr);
 
     }
 }
