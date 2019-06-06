@@ -22,6 +22,8 @@ import android.widget.ListPopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -72,6 +74,7 @@ public class MainActivity extends BaseActivity  {
     private int time=180;
     private ProgressDialog progressDialog;
     String uri;
+    String zyuri;
     String bhuri;
     private String mAndroidID;
     public Handler mHandler = new Handler();
@@ -85,11 +88,11 @@ public class MainActivity extends BaseActivity  {
                 if(time==150||time==120||time==90||time==60||time==30||time==1){
                     initdata();
                 }
-                if(time<=30&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
+                if(time<=30&&!bhuri.equals("http://ming.cdivtc.edu.cn/view/index.html?id="+mAndroidID)){
                     djs.setVisibility(View.VISIBLE);
                     djs.setText(time+"");
                     if(time==1){
-                        webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
+                        webview.loadUrl("http://ming.cdivtc.edu.cn/view/index.html?id=" + mAndroidID);
                         djs.setVisibility(View.GONE);
                         time=180;
                     }
@@ -103,6 +106,7 @@ public class MainActivity extends BaseActivity  {
             mHandler.postDelayed(this, 1000);
         }
     };
+    private List<MenuDataBean> mDataList;
 
     //http://ming.cdivtc.edu.cn/
     @Override
@@ -112,6 +116,33 @@ public class MainActivity extends BaseActivity  {
         mContext = MainActivity.this;
         initView();
         initdata();
+
+    }
+
+    @Override
+    public void getMsg(boolean flag) {
+        super.getMsg(flag);
+        mDataList = Sputils.getDataList("menu",  MenuDataBean[].class);
+        if(flag){
+            initMeunData();
+            zyuri=mDataList.get(0).url;
+            Log.d("boolen1",flag+"");
+        }else if(mDataList.size()!= 0){
+            try {
+                Log.d("boolen2",flag+"");
+                for(MenuDataBean dataBean: mDataList){
+                    Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                    menulist.add(dataBean.name);
+                    urllist.add(dataBean.url);
+                }
+                zyuri=mDataList.get(0).url;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            initMeunData();
+        }
+        Log.d("=======","22"+zyuri);
         initWeb();
         initlistener();
         initListPopWindow();
@@ -124,32 +155,6 @@ public class MainActivity extends BaseActivity  {
                 mListPop.show();
             }
         });
-    }
-
-    @Override
-    public void getMsg(boolean flag) {
-        super.getMsg(flag);
-        List<MenuDataBean> dataList = Sputils.getDataList("menu",  MenuDataBean[].class);
-        if(flag){
-            initMeunData();
-            Log.d("boolen1",flag+"");
-        }else if(dataList.size()!= 0){
-            try {
-                Log.d("boolen2",flag+"");
-                for(MenuDataBean dataBean:dataList){
-
-                    Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
-                    menulist.add(dataBean.name);
-                    urllist.add(dataBean.url);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }else {
-            initMeunData();
-        }
-
-
     }
 
     private void initMeunData() {
@@ -169,6 +174,8 @@ public class MainActivity extends BaseActivity  {
                     menulist.add(dataBean.name);
                     urllist.add(dataBean.url);
                 }
+                zyuri=menuBean.data.get(0).url;
+                Log.d("=======",""+zyuri);
                 if(menuBean.errcode == 200){
                     Sputils.setDataList("menu",menuBean.data);
                 }
@@ -181,7 +188,6 @@ public class MainActivity extends BaseActivity  {
 //                    Log.d("boolen2",flag+"");
                     List<MenuDataBean> dataList = Sputils.getDataList("menu",  MenuDataBean[].class);
                     for(MenuDataBean dataBean:dataList){
-
                         Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
                         menulist.add(dataBean.name);
                         urllist.add(dataBean.url);
@@ -208,6 +214,11 @@ public class MainActivity extends BaseActivity  {
                 JsonBean.DataBean data = newsBean.data;
                 Log.d("json", "success: "+data.admin);
                 String[] words = data.time.split(" ");
+//                logoImg
+                Glide.with(MainActivity.this).load("http://ming.cdivtc.edu.cn"+data.logo)
+                        .placeholder(R.drawable.teachcontext).error(R.drawable.teachcontext)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)//关闭Glide的硬盘缓存机制
+                        .into(logoImg);
                 addressname.setText(data.name+"");
                 adminname.setText("管理员:"+data.admin);
                 classTeach.setText("班级:"+data.classX+"\n教师:"+data.teacher);
@@ -303,11 +314,7 @@ public class MainActivity extends BaseActivity  {
                 // TODO Auto-generated method stub
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
-
                 Log.e("bh", "shouldOverrideUrlLoading: " + url);
-                mHandler.removeCallbacks(sRunnable);
-                time=180;
-                mHandler.postDelayed(sRunnable, 1000);
 
                 return true;
             }
@@ -316,6 +323,9 @@ public class MainActivity extends BaseActivity  {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 showProgress("页面加载中");//开始加载动画
+                mHandler.removeCallbacks(sRunnable);
+                time=180;
+                mHandler.postDelayed(sRunnable, 1000);
                 bhuri=url;
                 Log.d("bhurl", "onPageFinished: "+url);
             }
@@ -336,7 +346,7 @@ public class MainActivity extends BaseActivity  {
                 }
 //                view.loadUrl("about:blank");// 避免出现默认的错误界面
                 Toast.makeText(getApplicationContext(), "ip地址或者端口错误,马上默认跳转首页", Toast.LENGTH_SHORT).show();
-                view.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);// 加载自定义错误页面
+                view.loadUrl("http://ming.cdivtc.edu.cn/view/index.html?id=" + mAndroidID);// 加载自定义错误页面
             }
 
 
@@ -345,14 +355,16 @@ public class MainActivity extends BaseActivity  {
     }
 
     private void panduan() {
+
         if (Sputils.getString("ip").isEmpty()) {
-            uri = "http://ming.cdivtc.edu.cn/?id=" + mAndroidID;
+            uri = "http://ming.cdivtc.edu.cn"+zyuri+"?id=" + mAndroidID;
         } else if (judgeContainsStr(Sputils.getString("ip"))) {
-            uri = "http://" + Sputils.getString("ip") + "/?id=" + mAndroidID;
+            uri = "http://" + Sputils.getString("ip") +zyuri+"?id=" + mAndroidID;
         } else {
-            uri = "http://" + Sputils.getString("ip") + ":" + Sputils.getString("port") + "/view/index.html?id=" + mAndroidID;
+            uri = "http://" + Sputils.getString("ip") + ":" + Sputils.getString("port") + zyuri+"?id=" + mAndroidID;
         }
-        Log.e("uri", uri);
+        Log.e("uriiiii", uri);
+        Log.e("uriiiii", zyuri);
         webview.loadUrl(uri);
         Log.e("id", "onCreate: " + mAndroidID);
     }
