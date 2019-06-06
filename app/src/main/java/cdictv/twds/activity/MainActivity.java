@@ -1,6 +1,7 @@
 package cdictv.twds.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,17 +63,22 @@ public class MainActivity extends BaseActivity {
             if(time>0){
                 Log.e("time", "run: "+time);
                 Log.d("bhuri",bhuri);
+                if(time==150||time==120||time==90||time==60||time==30||time==1){
+                    initdata();
+                }
                 if(time<=31&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
                     djs.setVisibility(View.VISIBLE);
                     djs.setText(time+"");
                     if(time==1){
                         webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
                         djs.setVisibility(View.GONE);
-                        time=35;
+                        time=180;
                     }
+                }else if(time==1){
+
+                    time=180;
                 }else {
                     djs.setVisibility(View.GONE);
-                    mHandler.removeCallbacks(sRunnable);
                 }
             }
             mHandler.postDelayed(this, 1000);
@@ -96,13 +103,18 @@ public class MainActivity extends BaseActivity {
             public void success(String json) {
                 Log.i("json",json);
                 Gson gson=new Gson();
-             JsonBean newsBean=gson.fromJson(json,JsonBean.class);
+                JsonBean newsBean= null;
+                try {
+                    newsBean = gson.fromJson(json,JsonBean.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
                 JsonBean.DataBean data = newsBean.data;
                 Log.d("json", "success: "+data.admin);
                 String[] words = data.time.split(" ");
                 addressname.setText(data.name+"");
                 adminname.setText("管理员:"+data.admin);
-                classTeach.setText("班级:"+data.classX+"\n教师"+data.teacher);
+                classTeach.setText("班级:"+data.classX+"\n教师:"+data.teacher);
                 teachNum.setText("教学内容:"+data.jiaoxueneirong+"\n实训人数:"+
                         data.count+"   应到:"+data.yingdao+"   实到:"+data.shidao);
                 timeClass.setText("   "+words[0]+" \n   "+words[1]+" "+data.jiechi);
@@ -196,7 +208,7 @@ public class MainActivity extends BaseActivity {
 
                 Log.e("bh", "shouldOverrideUrlLoading: " + url);
                 mHandler.removeCallbacks(sRunnable);
-                time=35;
+                time=180;
                 mHandler.postDelayed(sRunnable, 1000);
 
                 return true;
@@ -206,13 +218,14 @@ public class MainActivity extends BaseActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 showProgress("页面加载中");//开始加载动画
+                bhuri=url;
+                Log.d("bhurl", "onPageFinished: "+url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                bhuri=url;
-                Log.d("bhurl", "onPageFinished: "+url);
+
                 removeProgress();//当加载结束时移除动画
             }
 
@@ -294,4 +307,20 @@ public class MainActivity extends BaseActivity {
         return m.matches();
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        startActivity(intent);
+
+    }
+    //返回键失效
+   /* @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }*/
 }

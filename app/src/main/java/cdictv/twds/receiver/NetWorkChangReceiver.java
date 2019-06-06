@@ -58,7 +58,11 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
                     Log.i("alertDialog", "onReceive: "+e.getMessage());
                     e.printStackTrace();
                 }
-                alertDialog.show();
+                try {
+                    alertDialog.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 netWork = false;
             }
 
