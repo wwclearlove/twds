@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -36,7 +35,7 @@ public class guideActivity extends BaseActivity {
         mCircleProgressbar.setProgressColor(Color.parseColor("#1BB079"));
         mCircleProgressbar.setProgressLineWidth(5);
         mCircleProgressbar.setProgressType(CircleProgressbar.ProgressType.COUNT);
-        mCircleProgressbar.setTimeMillis(10000);
+        mCircleProgressbar.setTimeMillis(5000);
         mCircleProgressbar.reStart();
 
         mCircleProgressbar.setCountdownProgressListener(1,progressListener);

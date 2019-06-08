@@ -26,7 +26,11 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.i("onReceive","----网络连接-----");
         if(!isNetworkConnected(context)){
-            message.getMsg(false);
+            try {
+                message.getMsg(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Log.i("----network-----","网络连接");
             Toast.makeText(context,"没有网络连接", Toast.LENGTH_SHORT).show();
 
@@ -47,7 +51,11 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             bulider.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
-                    dialog.dismiss();
+                    try {
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     netWork = true;
                 }
             });
@@ -60,12 +68,19 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
                     Log.i("alertDialog", "onReceive: "+e.getMessage());
                     e.printStackTrace();
                 }
-                alertDialog.show();
                 netWork = false;
             }
 
         }else {
+<<<<<<< HEAD
             message.getMsg(true);
+=======
+            try {
+                message.getMsg(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+>>>>>>> 595c89c4f0839ff000a44aaa7d9522efaa14345d
             if(alertDialog != null){
 //                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.dismiss();
@@ -88,7 +103,7 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
         return false;
     }
     public interface  Message{
-        public void getMsg(Boolean flag);
+        public void getMsg(boolean flag);
     }
 
     public Message getMessage() {

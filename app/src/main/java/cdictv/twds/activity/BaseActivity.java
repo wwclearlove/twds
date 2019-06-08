@@ -12,7 +12,7 @@ public class BaseActivity extends AppCompatActivity implements NetWorkChangRecei
     private boolean isReistered = false;
     private NetWorkChangReceiver netWorkChangReceiver;
     private IntentFilter filter;
-    private boolean flag;
+    private boolean flag1;
 
 
     @Override
@@ -38,16 +38,18 @@ public class BaseActivity extends AppCompatActivity implements NetWorkChangRecei
         }
     }
 
-    @Override
-    public void getMsg(Boolean flag) {
-        this.flag = flag;
-    }
 
     public boolean isFlag() {
-        return flag;
+        return flag1;
     }
 
     public void setFlag(boolean flag) {
-        this.flag = flag;
+        this.flag1 = flag;
+    }
+
+    @Override
+    public void getMsg(boolean flag) {
+      flag1 = flag;
+
     }
 }

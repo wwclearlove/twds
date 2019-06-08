@@ -19,9 +19,9 @@ import okhttp3.Response;
 public class OkhttpApi {
     private static Handler mHandler=new Handler(Looper.getMainLooper());
     private static OkHttpClient sOkHttpClient=new OkHttpClient.Builder()
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10,TimeUnit.SECONDS)
-            .readTimeout(10,TimeUnit.SECONDS)
+            .writeTimeout(200, TimeUnit.SECONDS)
+            .readTimeout(200,TimeUnit.SECONDS)
+            .readTimeout(200,TimeUnit.SECONDS)
             .build();
     public  static  void requser(Request request,final  Mycall mycall){
         sOkHttpClient.newCall(request).enqueue(new Callback() {

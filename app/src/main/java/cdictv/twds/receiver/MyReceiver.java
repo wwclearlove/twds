@@ -24,6 +24,12 @@ public class MyReceiver extends BroadcastReceiver {
             Intent intentMainActivity = new Intent(context, guideActivity.class);
             intentMainActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentMainActivity);
+        /*    Intent service = new Intent(context, MyService.class);
+            context.startService(service);*/
+//            Intent newIntent = context.getPackageManager()
+//                    .getLaunchIntentForPackage("cdictv.twds");
+//            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            context.startActivity(newIntent);
         }
     }
 

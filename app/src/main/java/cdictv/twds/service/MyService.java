@@ -19,7 +19,7 @@ public class MyService extends Service {
     @Override
 
     public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
+//        super.onStart(intent, startId);
         Intent i = new Intent(Intent.ACTION_MAIN);
         i.addCategory(Intent.CATEGORY_LAUNCHER);
         ComponentName cn = new ComponentName("cdictv.twds","cdictv.twds.activity.guideActivity");

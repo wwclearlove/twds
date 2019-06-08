@@ -2,18 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:background="#be000000"
+<<<<<<< HEAD
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
+=======
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+>>>>>>> 595c89c4f0839ff000a44aaa7d9522efaa14345d
 
     <TextView
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:textSize="16dp"
+<<<<<<< HEAD
 
+=======
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+>>>>>>> 595c89c4f0839ff000a44aaa7d9522efaa14345d
         android:id="@+id/pop_text"
         android:textColor="#FFF"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="返回首页"/>
     <View

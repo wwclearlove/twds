@@ -2,16 +2,13 @@ package cdictv.twds.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -22,11 +19,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListPopupWindow;
-import android.widget.PopupWindow;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -41,7 +38,6 @@ import cdictv.twds.bean.MenuBean;
 import cdictv.twds.bean.MenuDataBean;
 import cdictv.twds.network.Mycall;
 import cdictv.twds.network.ShowOkhkhttpapi;
-import cdictv.twds.receiver.NetWorkChangReceiver;
 import cdictv.twds.util.DeviceUtils;
 import cdictv.twds.util.Sputils;
 
@@ -78,6 +74,7 @@ public class MainActivity extends BaseActivity  {
     private int time=180;
     private ProgressDialog progressDialog;
     String uri;
+    String zyuri;
     String bhuri;
     private String mAndroidID;
     public Handler mHandler = new Handler();
@@ -88,24 +85,31 @@ public class MainActivity extends BaseActivity  {
             if(time>0){
                 Log.e("time", "run: "+time);
                 Log.d("bhuri",bhuri);
-                if(time<=31&&!bhuri.equals("http://ming.cdivtc.edu.cn/?id="+mAndroidID)){
+                if(time==150||time==120||time==90||time==60||time==30||time==1){
+                    initdata();
+                }
+                if(time<=30&&!bhuri.equals("http://ming.cdivtc.edu.cn/view/index.html?id="+mAndroidID)){
                     djs.setVisibility(View.VISIBLE);
                     djs.setText(time+"");
                     if(time==1){
-                        webview.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);
+                        webview.loadUrl("http://ming.cdivtc.edu.cn/view/index.html?id=" + mAndroidID);
                         djs.setVisibility(View.GONE);
-                        time=35;
+                        time=180;
                     }
+                }else if(time==1){
+
+                    time=180;
                 }else {
                     djs.setVisibility(View.GONE);
-                    mHandler.removeCallbacks(sRunnable);
                 }
             }
             mHandler.postDelayed(this, 1000);
         }
     };
+    private List<MenuDataBean> mDataList;
 
     @Override
+<<<<<<< HEAD
     public void getMsg(Boolean flag) {
         super.getMsg(flag);
         //this.flag = flag;
@@ -115,17 +119,42 @@ public class MainActivity extends BaseActivity  {
             initMeunData();
         }else if(dataList.size() != 0){
             Log.i("111super.isFlag()111", "onStart: "+flag);
+=======
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mContext = MainActivity.this;
+        initView();
+        initdata();
+
+    }
+
+    @Override
+    public void getMsg(boolean flag) {
+        super.getMsg(flag);
+        mDataList = Sputils.getDataList("menu",  MenuDataBean[].class);
+        if(flag){
+            initMeunData();
+            zyuri=mDataList.get(0).url;
+            Log.d("boolen1",flag+"");
+        }else if(mDataList.size()!= 0){
+>>>>>>> 595c89c4f0839ff000a44aaa7d9522efaa14345d
             try {
-                for(MenuDataBean dataBean:dataList){
+                Log.d("boolen2",flag+"");
+                for(MenuDataBean dataBean: mDataList){
                     Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
                     menulist.add(dataBean.name);
                     urllist.add(dataBean.url);
                 }
+                zyuri=mDataList.get(0).url;
             } catch (Exception e) {
                 Log.i("222super.isFlag()222", "onCreate: "+super.isFlag());
                 e.printStackTrace();
             }
+        }else {
+            initMeunData();
         }
+<<<<<<< HEAD
     }
 
     //http://ming.cdivtc.edu.cn/
@@ -137,6 +166,9 @@ public class MainActivity extends BaseActivity  {
         initView();
 
         initdata();
+=======
+        Log.d("=======","22"+zyuri);
+>>>>>>> 595c89c4f0839ff000a44aaa7d9522efaa14345d
         initWeb();
         initlistener();
         initListPopWindow();
@@ -169,15 +201,27 @@ public class MainActivity extends BaseActivity  {
                     menulist.add(dataBean.name);
                     urllist.add(dataBean.url);
                 }
+                zyuri=menuBean.data.get(0).url;
+                Log.d("=======",""+zyuri);
                 if(menuBean.errcode == 200){
                     Sputils.setDataList("menu",menuBean.data);
-
                 }
             }
 
             @Override
             public void filed(String msg) {
-
+                Log.e("err",msg);
+                try {
+//                    Log.d("boolen2",flag+"");
+                    List<MenuDataBean> dataList = Sputils.getDataList("menu",  MenuDataBean[].class);
+                    for(MenuDataBean dataBean:dataList){
+                        Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
+                        menulist.add(dataBean.name);
+                        urllist.add(dataBean.url);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -197,9 +241,14 @@ public class MainActivity extends BaseActivity  {
                 JsonBean.DataBean data = newsBean.data;
                 Log.d("json", "success: "+data.admin);
                 String[] words = data.time.split(" ");
+//                logoImg
+                Glide.with(MainActivity.this).load("http://ming.cdivtc.edu.cn"+data.logo)
+                        .placeholder(R.drawable.teachcontext).error(R.drawable.teachcontext)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)//关闭Glide的硬盘缓存机制
+                        .into(logoImg);
                 addressname.setText(data.name+"");
                 adminname.setText("管理员:"+data.admin);
-                classTeach.setText("班级:"+data.classX+"\n教师"+data.teacher);
+                classTeach.setText("班级:"+data.classX+"\n教师:"+data.teacher);
                 teachNum.setText("教学内容:"+data.jiaoxueneirong+"\n实训人数:"+
                         data.count+"   应到:"+data.yingdao+"   实到:"+data.shidao);
                 timeClass.setText("   "+words[0]+" \n   "+words[1]+" "+data.jiechi);
@@ -292,11 +341,7 @@ public class MainActivity extends BaseActivity  {
                 // TODO Auto-generated method stub
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 view.loadUrl(url);
-
                 Log.e("bh", "shouldOverrideUrlLoading: " + url);
-                mHandler.removeCallbacks(sRunnable);
-                time=35;
-                mHandler.postDelayed(sRunnable, 1000);
 
                 return true;
             }
@@ -305,13 +350,17 @@ public class MainActivity extends BaseActivity  {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 showProgress("页面加载中");//开始加载动画
+                mHandler.removeCallbacks(sRunnable);
+                time=180;
+                mHandler.postDelayed(sRunnable, 1000);
+                bhuri=url;
+                Log.d("bhurl", "onPageFinished: "+url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                bhuri=url;
-                Log.d("bhurl", "onPageFinished: "+url);
+
                 removeProgress();//当加载结束时移除动画
             }
 
@@ -324,7 +373,7 @@ public class MainActivity extends BaseActivity  {
                 }
 //                view.loadUrl("about:blank");// 避免出现默认的错误界面
                 Toast.makeText(getApplicationContext(), "ip地址或者端口错误,马上默认跳转首页", Toast.LENGTH_SHORT).show();
-                view.loadUrl("http://ming.cdivtc.edu.cn/?id=" + mAndroidID);// 加载自定义错误页面
+                view.loadUrl("http://ming.cdivtc.edu.cn/view/index.html?id=" + mAndroidID);// 加载自定义错误页面
             }
 
 
@@ -333,14 +382,16 @@ public class MainActivity extends BaseActivity  {
     }
 
     private void panduan() {
+
         if (Sputils.getString("ip").isEmpty()) {
-            uri = "http://ming.cdivtc.edu.cn/?id=" + mAndroidID;
+            uri = "http://ming.cdivtc.edu.cn"+zyuri+"?id=" + mAndroidID;
         } else if (judgeContainsStr(Sputils.getString("ip"))) {
-            uri = "http://" + Sputils.getString("ip") + "/?id=" + mAndroidID;
+            uri = "http://" + Sputils.getString("ip") +zyuri+"?id=" + mAndroidID;
         } else {
-            uri = "http://" + Sputils.getString("ip") + ":" + Sputils.getString("port") + "/oupi/?id=" + mAndroidID;
+            uri = "http://" + Sputils.getString("ip") + ":" + Sputils.getString("port") + zyuri+"?id=" + mAndroidID;
         }
-        Log.e("uri", uri);
+        Log.e("uriiiii", uri);
+        Log.e("uriiiii", zyuri);
         webview.loadUrl(uri);
         Log.e("id", "onCreate: " + mAndroidID);
     }
@@ -395,12 +446,30 @@ public class MainActivity extends BaseActivity  {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        startActivity(intent);
+
+    }
+    //返回键失效
+   /* @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }*/
+
+
 
 
     void initListPopWindow(){
 
 
-       List<MenuDataBean> dataList= Sputils.getDataList("menu",  MenuDataBean[].class);
+     /*  List<MenuDataBean> dataList= Sputils.getDataList("menu",  MenuDataBean[].class);
 
         try {
             for(MenuDataBean dataBean:dataList){
@@ -413,7 +482,7 @@ public class MainActivity extends BaseActivity  {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         mListPop = new ListPopupWindow(MainActivity.this);
 
