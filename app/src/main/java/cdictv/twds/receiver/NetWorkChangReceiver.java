@@ -65,13 +65,13 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             }
 
         }else {
-
+            message.getMsg(true);
             if(alertDialog != null){
 //                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 alertDialog.dismiss();
             }
             netWork = true;
-            return;
+            //return;
         }
     }
 

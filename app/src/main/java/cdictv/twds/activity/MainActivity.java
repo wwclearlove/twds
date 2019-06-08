@@ -105,17 +105,16 @@ public class MainActivity extends BaseActivity  {
         }
     };
 
-    //http://ming.cdivtc.edu.cn/
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mContext = MainActivity.this;
-        initView();
+    public void getMsg(Boolean flag) {
+        super.getMsg(flag);
+        //this.flag = flag;
         List<MenuDataBean> dataList= Sputils.getDataList("menu",  MenuDataBean[].class);
-        if(super.isFlag()){
+        if(flag){
+            Log.i("super.isFlag()", "onStart: "+flag);
             initMeunData();
         }else if(dataList.size() != 0){
+            Log.i("111super.isFlag()111", "onStart: "+flag);
             try {
                 for(MenuDataBean dataBean:dataList){
                     Log.i("MenuDataBean", "initListPopWindow: "+dataBean.name);
@@ -123,10 +122,19 @@ public class MainActivity extends BaseActivity  {
                     urllist.add(dataBean.url);
                 }
             } catch (Exception e) {
+                Log.i("222super.isFlag()222", "onCreate: "+super.isFlag());
                 e.printStackTrace();
             }
         }
+    }
 
+    //http://ming.cdivtc.edu.cn/
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mContext = MainActivity.this;
+        initView();
 
         initdata();
         initWeb();
@@ -142,6 +150,7 @@ public class MainActivity extends BaseActivity  {
             }
         });
     }
+
 
     private void initMeunData() {
         //初始化下拉菜单的值
